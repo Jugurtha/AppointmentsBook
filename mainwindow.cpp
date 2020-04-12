@@ -13,6 +13,19 @@ MainWindow::MainWindow(QWidget *parent) :
     for(int i = 0; i< NBR_ACTIONS ; i++)
         action[i] = ui->mainToolBar->addAction(QIcon(QString("../icons/") + icon[i] + ".png"), actionName[i]);
 
+
+    //QMenu* fileMenu = ui->menuBar->addMenu("FIle");
+    QMenu* insertMenu = ui->menuBar->addMenu("Insert");
+    QMenu* viewMenu = ui->menuBar->addMenu("View");
+    QMenu* modifyMenu = ui->menuBar->addMenu("Modify");
+    QMenu* printingMenu = ui->menuBar->addMenu("Printing");
+
+    insertMenu->addActions(QList<QAction*>{action[ADD_PATIENT], action[ADD_APPOINTMENT]});
+    viewMenu->addActions(QList<QAction*>{action[SEARCH_PATIENT],action[SEARCH_APPOINTMENT_BY_DATE],action[SEARCH_APPOINTMENT_BY_PATIENT]});
+    modifyMenu->addActions(QList<QAction*>{action[MODIFY_APPOINTMENT]});
+    printingMenu->addActions(QList<QAction*>{action[PRINT]});
+
+
     date_selector = new QDateEdit(QDate::currentDate());
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addWidget(date_selector);
