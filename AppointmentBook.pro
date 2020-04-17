@@ -26,14 +26,17 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    searchdialog.cpp \
-    dbhandler.cpp
+    dbhandler.cpp \
+    searchpatientdialog.cpp \
+    selectpatientdialog.cpp
 
 HEADERS += \
         mainwindow.h \
-    searchdialog.h \
-    dbhandler.h
+    dbhandler.h \
+    searchpatientdialog.h \
+    selectpatientdialog.h
 
 FORMS += \
         mainwindow.ui \
-    searchdialog.ui
+    searchpatientdialog.ui \
+    selectpatientdialog.ui

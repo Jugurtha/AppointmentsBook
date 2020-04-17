@@ -52,9 +52,22 @@ bool DBHandler::addPatient(QString nom, QString prenom, QString adresse, QString
 QSqlQueryModel* DBHandler::getPatients(QString nom, QString prenom)
 {
     QSqlQuery query;
-    query.prepare("SELECT * FROM patient WHERE nom = :nom AND prenom = :prenom");
-    query.bindValue(":nom", nom);
-    query.bindValue(":prenom", prenom);
+    QString str;
+
+    if(!nom.isEmpty() && !prenom.isEmpty())
+        str = "SELECT * FROM patient WHERE nom = :nom AND prenom = :prenom";
+    else{
+        if(!nom.isEmpty() && prenom.isEmpty())
+            str = "SELECT * FROM patient WHERE nom = :nom";
+        else if(nom.isEmpty() && !prenom.isEmpty())
+            str = "SELECT * FROM patient WHERE prenom = :prenom";
+    }
+    query.prepare(str);
+
+    if(!nom.isEmpty())
+        query.bindValue(":nom", nom);
+    if(!prenom.isEmpty())
+        query.bindValue(":prenom", prenom);
     if(!query.exec())
     {
         qWarning() << "ERROR: " << query.lastError().text();

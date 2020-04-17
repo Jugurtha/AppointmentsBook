@@ -3,7 +3,10 @@
 
 #include <QMainWindow>
 #include <QDateEdit>
+#include <QSqlQueryModel>
 #include <dbhandler.h>
+#include <searchpatientdialog.h>
+#include <selectpatientdialog.h>
 
 namespace Ui {
 class MainWindow;
@@ -18,6 +21,18 @@ public:
     ~MainWindow();
 
     enum {ADD_PATIENT, ADD_APPOINTMENT, MODIFY_APPOINTMENT, SEARCH_APPOINTMENT_BY_DATE, SEARCH_APPOINTMENT_BY_PATIENT, SEARCH_PATIENT, PRINT, NBR_ACTIONS};
+
+    void showAppointments(QSqlQueryModel *model);
+    void showTodaysAppointments();
+
+public slots:
+    void on_AddPatient();
+    void on_AddAppointment();
+    void on_ModifyAppointment();
+    void on_SearchAppointmentByDate();
+    void on_SearchAppointmentByPatient();
+    void on_SearchPatient();
+    void on_Print();
 
 private:
     Ui::MainWindow *ui;
