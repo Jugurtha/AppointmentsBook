@@ -28,15 +28,21 @@ SOURCES += \
         mainwindow.cpp \
     dbhandler.cpp \
     searchpatientdialog.cpp \
-    selectpatientdialog.cpp
+    selectpatientdialog.cpp \
+    dialogaddpatient.cpp \
+    addappointmentdialog.cpp
 
 HEADERS += \
         mainwindow.h \
     dbhandler.h \
     searchpatientdialog.h \
-    selectpatientdialog.h
+    selectpatientdialog.h \
+    dialogaddpatient.h \
+    addappointmentdialog.h
 
 FORMS += \
         mainwindow.ui \
     searchpatientdialog.ui \
-    selectpatientdialog.ui
+    selectpatientdialog.ui \
+    dialogaddpatient.ui \
+    addappointmentdialog.ui

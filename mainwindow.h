@@ -7,6 +7,8 @@
 #include <dbhandler.h>
 #include <searchpatientdialog.h>
 #include <selectpatientdialog.h>
+#include <dialogaddpatient.h>
+#include <addappointmentdialog.h>
 
 namespace Ui {
 class MainWindow;
@@ -33,14 +35,18 @@ public slots:
     void on_SearchAppointmentByPatient();
     void on_SearchPatient();
     void on_Print();
+    void on_dateChanged(QDate date);
 
 private:
     Ui::MainWindow *ui;
-    QDateEdit *date_selector;
+    QDateEdit *dateSelector;
     QAction* action[NBR_ACTIONS];
     QStringList icon{"Add patient", "Add appointment", "Modify appointment","Search appointment by date", "Search appointment by patient", "Search patient", "Print"};
     QStringList actionName{"Add patient", "Add appointment", "Modify appointment","Search appointment by date", "Search appointment by patient", "Search patient", "Print"};
     DBHandler dbhandler;
+    QSqlQueryModel *currentModel;
+
+    void updateAppointmentsView();
 
 };
 

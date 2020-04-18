@@ -9,6 +9,7 @@ SelectPatientDialog::SelectPatientDialog(QSqlQueryModel *model, QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("Select Patient");
     ui->tableView->setModel(model);
+    ui->tableView->selectRow(0);
 }
 
 SelectPatientDialog::~SelectPatientDialog()

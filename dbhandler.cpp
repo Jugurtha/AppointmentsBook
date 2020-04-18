@@ -85,6 +85,26 @@ QSqlQueryModel* DBHandler::getPatients(QString nom, QString prenom)
     return model;
 }
 
+QSqlQueryModel *DBHandler::getPatients()
+{
+    QSqlQuery query("SELECT id, nom, prenom, adresse, telephone, mail FROM patient");
+    if(!query.exec())
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+        qDebug() << "SELECT ON TABLE patient failed";
+        return NULL;
+    }
+
+    QSqlQueryModel *model = new QSqlQueryModel(parent);
+    model->setQuery(query);
+    if (model->lastError().isValid())
+    {
+        qWarning() << "ERROR: " << model->lastError().text();
+    }
+
+    return model;
+}
+
 bool DBHandler::addAppointment(qint32 patient, QDate date, QTime heure, QString objet)
 {
     QSqlQuery query;
