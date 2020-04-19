@@ -10,6 +10,19 @@ AddAppointmentDialog::AddAppointmentDialog(QSqlQueryModel *patientsModel, QWidge
     ui->setupUi(this);
 }
 
+AddAppointmentDialog::AddAppointmentDialog(qint32 idPatient, QDate date, QTime time, QString object, QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::AddAppointmentDialog),
+    idPatient(idPatient)
+{
+    ui->setupUi(this);
+    ui->selectPatientButton->setText("Id Pateint : " + QString::number(idPatient));
+    ui->selectPatientButton->setEnabled(false);
+    ui->date->setDate(date);
+    ui->time->setTime(time);
+    ui->ObjectTextEdit->setText(object);
+}
+
 QDate AddAppointmentDialog::getDate()
 {
     return ui->date->date();

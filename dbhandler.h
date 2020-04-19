@@ -23,7 +23,8 @@ public:
     bool addAppointment(qint32 patient, QDate date, QTime heure, QString objet);
     QSqlQueryModel* getAppointments(QDate date);
     QSqlQueryModel* getAppointments(qint32 patient);
-    bool modifyAppointment(qint32 patient, QDate date, QTime heure = QTime()/*QTime::isNull()*/, QString objet = "");
+    bool modifyAppointment(qint32 id, QDate date, QTime heure = QTime()/*QTime::isNull()*/, QString objet = "");
+    bool deleteAppointment(qint32 id);
 private :
     QObject *parent;
     QSqlDatabase db;

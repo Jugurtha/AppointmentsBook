@@ -128,7 +128,7 @@ bool DBHandler::addAppointment(qint32 patient, QDate date, QTime heure, QString 
 QSqlQueryModel* DBHandler::getAppointments(QDate date)
 {
     QSqlQuery query;
-    query.prepare("SELECT * FROM rdv WHERE date = :date");
+    query.prepare("SELECT rdv.id, id_patient, nom, prenom, date, heure, objet FROM rdv INNER JOIN patient ON patient.id=id_patient WHERE date = :date");
     query.bindValue(":date", date);
     if(!query.exec())
     {
@@ -169,24 +169,32 @@ QSqlQueryModel *DBHandler::getAppointments(qint32 patient)
     return model;
 }
 
-bool DBHandler::modifyAppointment(qint32 patient, QDate date, QTime heure, QString objet)
+bool DBHandler::modifyAppointment(qint32 id, QDate date, QTime heure, QString objet)
 {
     QSqlQuery query;
-    QString strObjet, strHeure;
-    if(!objet.isEmpty())
-        strObjet = ", heure = :heure";
-    if(!date.isNull())
-        strHeure = ", objet = :objet";
+    query.prepare("UPDATE rdv SET date = :date, heure = :heure, objet = :objet WHERE id = :id");
 
-    query.prepare("UPDATE rdv SET date = :date"+strHeure+strObjet+
-                        "WHERE id_patient = :id_patient");
-
-    query.bindValue(":id_patient", patient);
+    query.bindValue(":id", id);
     query.bindValue(":date", date);
-    if(!objet.isEmpty())
-        query.bindValue(":heure", heure);
-    if(!date.isNull())
-            query.bindValue(":objet", objet);
+    query.bindValue(":heure", heure);
+    query.bindValue(":objet", objet);
+
+    if(!query.exec())
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+        qDebug() << "UPDATE ON TABLE rdv failed";
+        return false;
+    }
+
+    return true;
+}
+
+bool DBHandler::deleteAppointment(qint32 id)
+{
+    QSqlQuery query;
+    query.prepare("DELETE FROM rdv WHERE id = :id");
+
+    query.bindValue(":id", id);
 
     if(!query.exec())
     {

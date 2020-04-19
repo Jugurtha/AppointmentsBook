@@ -18,6 +18,7 @@ class AddAppointmentDialog : public QDialog
 
 public:
     explicit AddAppointmentDialog(QSqlQueryModel* patientsModel, QWidget *parent = 0);
+    explicit AddAppointmentDialog(qint32 idPatient, QDate date, QTime time, QString object, QWidget *parent = 0);
     QDate getDate();
     QTime getTime();
     QString getObject();

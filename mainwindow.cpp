@@ -26,16 +26,17 @@ MainWindow::MainWindow(QWidget *parent) :
     modifyMenu->addActions(QList<QAction*>{action[MODIFY_APPOINTMENT]});
     printingMenu->addActions(QList<QAction*>{action[PRINT]});
 
-    action[MODIFY_APPOINTMENT]->setEnabled(false);
-    action[PRINT]->setEnabled(false);
+    setModifyDeletePrintEnabled(false);
 
     connect(action[ADD_PATIENT],SIGNAL(triggered(bool)),this, SLOT(on_AddPatient()));
     connect(action[ADD_APPOINTMENT],SIGNAL(triggered(bool)),this, SLOT(on_AddAppointment()));
     connect(action[MODIFY_APPOINTMENT],SIGNAL(triggered(bool)),this, SLOT(on_ModifyAppointment()));
+    connect(action[DELETE_APPOINTMENT],SIGNAL(triggered(bool)),this, SLOT(on_DeleteAppointment()));
     connect(action[SEARCH_APPOINTMENT_BY_DATE],SIGNAL(triggered(bool)),this, SLOT(on_SearchAppointmentByDate()));
     connect(action[SEARCH_APPOINTMENT_BY_PATIENT],SIGNAL(triggered(bool)),this, SLOT(on_SearchAppointmentByPatient()));
     connect(action[SEARCH_PATIENT],SIGNAL(triggered(bool)),this, SLOT(on_SearchPatient()));
     connect(action[PRINT],SIGNAL(triggered(bool)),this, SLOT(on_Print()));
+    connect(ui->dayAppointmentsView, SIGNAL(pressed(QModelIndex)), this, SLOT(on_enableModifyDeletePrint()));
 
     dateSelector = new QDateEdit(QDate::currentDate());
     ui->mainToolBar->addSeparator();
@@ -105,11 +106,46 @@ void MainWindow::on_AddAppointment()
 
 void MainWindow::on_ModifyAppointment()
 {
-    //Code this...........................................................................................................................
-    updateAppointmentsView();
+    setModifyDeletePrintEnabled(false);
+
+    auto model = ui->dayAppointmentsView->model();
+    auto row = ui->dayAppointmentsView->selectionModel()->currentIndex().row();
+
+    auto id = model->data(model->index(row,0)).toInt();
+    auto idPatient = model->data(model->index(row,1)).toInt();
+    auto date = model->data(model->index(row,4)).toDate();
+    auto time = model->data(model->index(row,5)).toTime();
+    auto object = model->data(model->index(row,6)).toString();
+
+    AddAppointmentDialog modifyAppoitmentDialog(idPatient, date, time, object, this);
+    if(modifyAppoitmentDialog.exec()==QDialog::Accepted)
+    {
+        if(!dbhandler.modifyAppointment(id, modifyAppoitmentDialog.getDate(),
+                                     modifyAppoitmentDialog.getTime(), modifyAppoitmentDialog.getObject()))
+            qDebug() << "Add patient failed.";
+        updateAppointmentsView();
+    }
+
 }
 
-void MainWindow::on_SearchAppointmentByDate()
+void MainWindow::on_DeleteAppointment()
+{
+    setModifyDeletePrintEnabled(false);
+    auto model = ui->dayAppointmentsView->model();
+    auto row = ui->dayAppointmentsView->selectionModel()->currentIndex().row();
+    auto id = model->data(model->index(row,0)).toInt();
+
+    if(QMessageBox::question(this,"Delete Appointment","Are you sure you want to delete this appointment ?",
+                             QMessageBox::Yes,QMessageBox::No)==QMessageBox::Yes)
+    {
+        if(!dbhandler.deleteAppointment(id))
+            qDebug() << "Delete appointment " << id << " failed.";
+
+        updateAppointmentsView();
+    }
+}
+
+void MainWindow::on_SearchAppointmentByDate()//Done
 {
     dbhandler.getAppointments(QDate());//Code this........................................................................................
     updateAppointmentsView();
@@ -189,11 +225,17 @@ void MainWindow::on_SearchPatient()
 void MainWindow::on_Print()
 {
     //Code this............................................................................................................................
+    setModifyDeletePrintEnabled(false);
 }
 
 void MainWindow::on_dateChanged(QDate date)
 {
     showAppointments(dbhandler.getAppointments(date));
+}
+
+void MainWindow::on_enableModifyDeletePrint()
+{
+    setModifyDeletePrintEnabled(true);
 }
 
 void MainWindow::updateAppointmentsView()
@@ -211,6 +253,13 @@ void MainWindow::updateAppointmentsView()
     }
 
     showAppointments(currentModel);
+}
+
+void MainWindow::setModifyDeletePrintEnabled(bool enabled)
+{
+    action[MODIFY_APPOINTMENT]->setEnabled(enabled);
+    action[PRINT]->setEnabled(enabled);
+    action[DELETE_APPOINTMENT]->setEnabled(enabled);
 }
 
 
