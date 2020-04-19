@@ -226,6 +226,33 @@ void MainWindow::on_Print()
 {
     //Code this............................................................................................................................
     setModifyDeletePrintEnabled(false);
+    QPrinter printer;
+    QPrintDialog printerDialog(&printer,this);
+    if(printerDialog.exec()==QDialog::Accepted)
+    {
+        auto model = ui->dayAppointmentsView->model();
+        auto row = ui->dayAppointmentsView->selectionModel()->currentIndex().row();
+
+        auto id = model->data(model->index(row,0)).toInt();
+        auto idPatient = model->data(model->index(row,1)).toInt();
+        auto patientName = model->data(model->index(row,2)).toString();
+        auto patientSurname = model->data(model->index(row,3)).toString();
+        auto date = model->data(model->index(row,4)).toDate();
+        auto time = model->data(model->index(row,5)).toTime();
+        auto object = model->data(model->index(row,6)).toString();
+        QString str;
+        str.append("Appointment id :" + QString::number(id)+ ",\n\r");
+        str.append("Patient id : " + QString::number(idPatient)+ ",\n\r");
+        str.append("Patient Name : " + patientName + ",\n\r");
+        str.append("Patient Surname : " + patientSurname + ",\n\r");
+        str.append("Appointment date " + date.toString() + ",\n\r");
+        str.append("Appointment time " + time.toString() + ",\n\r");
+        str.append("Appointment object " + object + "\n\r");
+        QTextDocument text;
+        text.setPlainText(str);
+        text.print(&printer);
+
+    }
 }
 
 void MainWindow::on_dateChanged(QDate date)

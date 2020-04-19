@@ -9,6 +9,9 @@
 #include <selectpatientdialog.h>
 #include <dialogaddpatient.h>
 #include <addappointmentdialog.h>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QTextDocument>
 
 namespace Ui {
 class MainWindow;
