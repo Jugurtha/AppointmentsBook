@@ -12,6 +12,7 @@
 #include <QPrinter>
 #include <QPrintDialog>
 #include <QTextDocument>
+#include <searchbydatedialog.h>
 
 namespace Ui {
 class MainWindow;

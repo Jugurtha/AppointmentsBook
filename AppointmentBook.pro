@@ -30,7 +30,8 @@ SOURCES += \
     searchpatientdialog.cpp \
     selectpatientdialog.cpp \
     dialogaddpatient.cpp \
-    addappointmentdialog.cpp
+    addappointmentdialog.cpp \
+    searchbydatedialog.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -38,11 +39,13 @@ HEADERS += \
     searchpatientdialog.h \
     selectpatientdialog.h \
     dialogaddpatient.h \
-    addappointmentdialog.h
+    addappointmentdialog.h \
+    searchbydatedialog.h
 
 FORMS += \
         mainwindow.ui \
     searchpatientdialog.ui \
     selectpatientdialog.ui \
     dialogaddpatient.ui \
-    addappointmentdialog.ui
+    addappointmentdialog.ui \
+    searchbydatedialog.ui

@@ -17,10 +17,19 @@ SelectPatientDialog::~SelectPatientDialog()
     delete ui;
 }
 
-quint32 SelectPatientDialog::getSelectedPatient()
+qint32 SelectPatientDialog::getSelectedPatient()
 {
     if(ui->tableView->selectionModel()->hasSelection())
         return ui->tableView->model()->data(ui->tableView->selectionModel()->selectedRows().at(0)).toInt();
 
     return -1;
 }
+
+qint32 SelectPatientDialog::getSelectedRow()
+{
+    if(ui->tableView->selectionModel()->hasSelection())
+        return ui->tableView->selectionModel()->currentIndex().row();
+
+    return -1;
+}
+

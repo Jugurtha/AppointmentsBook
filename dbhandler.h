@@ -20,6 +20,7 @@ public:
     bool addPatient(QString nom, QString prenom, QString adresse,QString telephone, QString mail,QString information);
     QSqlQueryModel* getPatients(QString nom, QString prenom);
     QSqlQueryModel* getPatients();
+    bool modifyPatient(qint32 id, QString nom, QString prenom, QString adresse,QString telephone, QString mail,QString information);
     bool addAppointment(qint32 patient, QDate date, QTime heure, QString objet);
     QSqlQueryModel* getAppointments(QDate date);
     QSqlQueryModel* getAppointments(qint32 patient);

@@ -145,10 +145,22 @@ void MainWindow::on_DeleteAppointment()
     }
 }
 
-void MainWindow::on_SearchAppointmentByDate()//Done
+void MainWindow::on_SearchAppointmentByDate()
 {
-    dbhandler.getAppointments(QDate());//Code this........................................................................................
-    updateAppointmentsView();
+    SearchByDateDialog dialog(this);
+    if(dialog.exec()==QDialog::Accepted)
+    {
+        QDate date(dialog.getDate());
+        auto model(dbhandler.getAppointments(date));
+        if(model->rowCount()>=1)
+        {
+            showAppointments(model);
+            dateSelector->setDate(date);
+        }
+        else {
+            QMessageBox::information(this,"Serach Appointment By Date","There are no appointments on this date.");
+        }
+    }
 }
 
 void MainWindow::on_SearchAppointmentByPatient()
@@ -191,32 +203,72 @@ void MainWindow::on_SearchPatient()
     if(searchDialog.exec() == QDialog::Accepted)
     {
         if(searchDialog.getFamilyName().isEmpty() && searchDialog.getFirstName().isEmpty())
+        {
             QMessageBox::information(this, "Information","You did not provide a first or last name.");
-        else{
-            QSqlQueryModel *model = dbhandler.getPatients(searchDialog.getFamilyName(), searchDialog.getFirstName());
-            if(model->rowCount()==0)
-            {
-                QMessageBox::information(this, "Search result", "No patient with this name found.");
-                return;
-            }
-            else if (model->rowCount()==1){
-                //Show this...............................................................................................................
-                //SelectPatientDialog d(model,this);
-                //d.exec();
-            }
-            else{
-                SelectPatientDialog selectPatientDialog(model, this);
-                if(selectPatientDialog.exec()==QDialog::Accepted)
+        }
+        else
+        {
+                QSqlQueryModel *model = dbhandler.getPatients(searchDialog.getFamilyName(), searchDialog.getFirstName());
+
+                if(model->rowCount()==0)
                 {
-                    selectPatientDialog.getSelectedPatient();//Show this..................................................................
-                    qDebug() << "idPatient  = " << selectPatientDialog.getSelectedPatient();
-                }
-                else
-                {
-                    QMessageBox::information(this, "Information","You did not select a patient.");
+                    QMessageBox::information(this, "Search result", "No patient with this name found.");
                     return;
                 }
-            }
+                else if (model->rowCount()==1)
+                {
+                    auto row = 0;
+                    auto idPatient = model->data(model->index(row,0)).toInt();
+                    auto patientName = model->data(model->index(row,1)).toString();
+                    auto patientSurname = model->data(model->index(row,2)).toString();
+                    auto adress = model->data(model->index(row,3)).toString();
+                    auto phone = model->data(model->index(row,4)).toString();
+                    auto mail = model->data(model->index(row,5)).toString();
+                    auto infoMed = model->data(model->index(row,6)).toString();
+
+                    DialogAddPatient patientDialog(this,patientName, patientSurname, adress, phone,mail,infoMed);
+                    if(patientDialog.exec()==QDialog::Accepted)
+                        if(!dbhandler.modifyPatient(idPatient, patientDialog.getFamilyName(), patientDialog.getFirstName(),
+                                                    patientDialog.getAdress(),patientDialog.getPhoneNumber(),
+                                                    patientDialog.getEmail(),patientDialog.getMedicalInfo()))
+                        {
+                            qDebug() << "UPDATE on patient " << idPatient << " failed.";
+                            updateAppointmentsView();
+                        }
+
+                }
+                else
+                {qDebug() << 0;
+                    SelectPatientDialog selectPatientDialog(model, this);
+                    if(selectPatientDialog.exec()==QDialog::Accepted)
+                    {
+                        auto row = selectPatientDialog.getSelectedRow();
+                        if(row == -1)
+                        {
+                            QMessageBox::information(this, "Information","You did not select a patient.");
+                            qDebug() << 3;
+                            return;
+                        }
+                        auto idPatient = model->data(model->index(row,0)).toInt();
+                        auto patientName = model->data(model->index(row,1)).toString();
+                        auto patientSurname = model->data(model->index(row,2)).toString();
+                        auto adress = model->data(model->index(row,3)).toString();
+                        auto phone = model->data(model->index(row,4)).toString();
+                        auto mail = model->data(model->index(row,5)).toString();
+                        auto infoMed = model->data(model->index(row,6)).toString();
+
+                        DialogAddPatient patientDialog(this,patientName, patientSurname, adress, phone,mail, infoMed);
+                        if(patientDialog.exec()==QDialog::Accepted)
+                            if(!dbhandler.modifyPatient(idPatient, patientDialog.getFamilyName(), patientDialog.getFirstName(),
+                                                        patientDialog.getAdress(),patientDialog.getPhoneNumber(),
+                                                        patientDialog.getEmail(),patientDialog.getMedicalInfo()))
+                            {
+                                qDebug() << "UPDATE on patient " << idPatient << " failed.";
+                                updateAppointmentsView();  qDebug() << 1;
+                            }
+qDebug() << 2;
+                    }
+                }
 
         }
     }
@@ -224,7 +276,6 @@ void MainWindow::on_SearchPatient()
 
 void MainWindow::on_Print()
 {
-    //Code this............................................................................................................................
     setModifyDeletePrintEnabled(false);
     QPrinter printer;
     QPrintDialog printerDialog(&printer,this);
@@ -257,7 +308,15 @@ void MainWindow::on_Print()
 
 void MainWindow::on_dateChanged(QDate date)
 {
-    showAppointments(dbhandler.getAppointments(date));
+    auto model(dbhandler.getAppointments(date));
+    if(model->rowCount()>=1)
+    {
+        showAppointments(model);
+    }
+    else {
+        QMessageBox::information(this,"Serach Appointment By Date","There are no appointments on this date.");
+        showAppointments(model);
+    }
 }
 
 void MainWindow::on_enableModifyDeletePrint()

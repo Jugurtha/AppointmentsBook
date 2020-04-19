@@ -105,6 +105,29 @@ QSqlQueryModel *DBHandler::getPatients()
     return model;
 }
 
+bool DBHandler::modifyPatient(qint32 id, QString nom, QString prenom, QString adresse, QString telephone, QString mail, QString information)
+{
+    QSqlQuery query;
+    query.prepare("UPDATE patient SET nom = :nom, prenom = :prenom, adresse = :adresse, telephone = :telephone, mail = :mail, information_medicale = :information_medicale WHERE id = :id");
+
+    query.bindValue(":id", id);
+    query.bindValue(":nom", nom);
+    query.bindValue(":prenom", prenom);
+    query.bindValue(":adresse", adresse);
+    query.bindValue(":telephone", telephone);
+    query.bindValue(":mail", mail);
+    query.bindValue(":information_medicale", information);
+
+    if(!query.exec())
+    {
+        qWarning() << "ERROR: " << query.lastError().text();
+        qDebug() << "UPDATE ON TABLE patient failed";
+        return false;
+    }
+
+    return true;
+}
+
 bool DBHandler::addAppointment(qint32 patient, QDate date, QTime heure, QString objet)
 {
     QSqlQuery query;
